@@ -1,0 +1,58 @@
+<html>
+
+<head>
+
+	<meta charset="UTF-8">
+
+	<title>{{ data.subject }}</title>
+
+</head>
+
+<body style="font-family: Arial, Helvetica, sans-serif;">
+
+	<h2>{{ data.subject }}</h2>
+    <h4>Generated on {{ data.today.strftime("%A %e %B, %Y") }} for {{ data.start_date.date() }} at {{ data.now.strftime('%I:%M:%S %p') }} </h4>
+
+	<p>Here is this week&apos;s attendance report for students. The below table is for all student who have status other than "Present":</p>
+
+    <table style="border: 1px solid black; border-collapse: collapse;">
+        <thead>
+            <tr style="border-top: 1px solid black;">
+                <th style="font-weight: 900; padding: 10px; color: #eee; background-color: #999;">{{ data.df.index.name }}</th>
+                {% for column_name in data.df.columns -%}
+                <td style="font-weight: 900; padding: 10px; color: #eee; background-color: #999;">{{ column_name }}</td>
+                {% endfor -%}
+            </tr>
+        </thead>
+        <tbody>
+            {% set values = data.df.values -%}
+            {% for grade in data.df.index -%}
+            <tr style="border-top: 1px solid black">
+                {% if grade == 'Total' -%}
+                <th style="font-size:smaller; padding: 10px;background-color: #FF9300;">{{ grade }}</th>
+                {% else -%}
+                <th style="font-size:smaller; padding: 10px;background-color: #FFC600;">{{ grade }}</th>
+                {% endif -%}
+                {% set row_index = loop.index0 -%}
+                {% set row = values[row_index] -%}
+                {% for value in row -%}
+                    {% if grade == 'Total' -%}
+                <td style="text-align: center; padding: 10px; font-weight: 900; background-color: #FF9300;">{{ value }}</td>
+                    {% else -%}
+                <td style="text-align: center;padding: 10px;{{ 'font-style: italic;background-color: #eee;' if loop.index == 1 else ''}}">{{ value }}</td>
+                    {% endif -%}
+                {% endfor -%}
+            </tr>
+            {% endfor -%}
+        </tbody>
+
+    </table>
+
+	<p>You can always go to our Managebac to confirm these details.</p>
+
+	<p>Thank you for your attention to this matter.</p>
+
+	<p>Sincerely,</p>
+</body>
+
+</html>
