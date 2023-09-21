@@ -1,5 +1,5 @@
 from mbpy.cli.formatted_click import click
-from datetime import datetime
+from mbpy.cli.formatted_click import RichClickGroup, RichClickCommand
 from .workweek import WorkWeek
 from mbpy.db.schema import YearGroup, Student, HRAttendanceByDate, Teacher
 from mbpy.cli.contexts import ImportContext, pass_settings_context
@@ -11,28 +11,16 @@ import sqlalchemy as sa
 from sqlalchemy import and_
 from .utils import multi_index_readable
 from .calculate import build_cumulative_status_is_active
-from .utils import shared_options
+from .utils import smtp_shared_options, command_shared_options
 from .send_email import send_email
 from mbpy.exchanges.smtp import message_exchange, smtp_exchange
 import pathlib
 from sqlalchemy.orm import aliased
 
 
-@click.command("cumulative-hr-attendance")
-@click.option(
-    "--scope", "scope", default="weekly", type=click.Choice(["weekly", "monthly", "daily"])
-)  # TODO: termly
-@click.option(
-    "--date",
-    "date",
-    type=click.DateTime(formats=["%Y-%m-%d"]),
-    default=datetime.today(),
-)
-@click.option(
-    "--work-week", type=click.Choice(["mon-fri", "sun-thurs"]), default="mon-fri"
-)
-@click.option("-i", "--import/--skip-import", "import_", is_flag=True, default=True)
-@shared_options
+@click.command("cumulative-hr-attendance", cls=RichClickCommand)
+@command_shared_options
+@smtp_shared_options
 @pass_settings_context
 @click.pass_context
 def cli(
@@ -52,7 +40,8 @@ def cli(
     tls,
     template,
     manual_statuses,
-    absent_category_name
+    absent_category_name,
+    reports = True
 ):
     """Output for homeroom attendance"""
     end_date = date
@@ -151,6 +140,8 @@ def cli(
         if raw_df.empty:
             print('no records!')
             return
+
+        if not reports: return raw_df
 
         cumulative = build_cumulative_status_is_active(raw_df, absent_column_name=absent_category_name)
         for manual_status in manual_statuses:
