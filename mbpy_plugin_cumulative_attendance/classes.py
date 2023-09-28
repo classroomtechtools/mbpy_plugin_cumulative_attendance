@@ -10,7 +10,7 @@ import numpy as np
 from .utils import multi_index_readable
 from .calculate import build_cumulative_status_is_active
 from .utils import smtp_shared_options, command_shared_options
-from mbpy.exchanges.smtp import message_exchange, smtp_exchange
+from mbpy.exchanges.smtp_exchange import message_exchange, smtp_exchange
 import pathlib
 
 

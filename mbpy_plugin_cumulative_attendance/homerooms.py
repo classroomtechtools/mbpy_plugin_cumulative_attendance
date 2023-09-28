@@ -13,7 +13,7 @@ from .utils import multi_index_readable
 from .calculate import build_cumulative_status_is_active
 from .utils import smtp_shared_options, command_shared_options
 from .send_email import send_email
-from mbpy.exchanges.smtp import message_exchange, smtp_exchange
+from mbpy.exchanges.smtp_exchange import message_exchange, smtp_exchange
 import pathlib
 from sqlalchemy.orm import aliased
 
